@@ -29,8 +29,7 @@ jobs:
         with:
           gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY_B64 }}
           context: .
-          dockerfile: build/Dockerfile
-          # build_args: ghost_version=4.43.0
+          dockerfile: Dockerfile
           registry: us.gcr.io
           project_id: ep-core-dev
           image_name: keel
