@@ -21,7 +21,7 @@ module.exports = {
     }
   },
   */
-  publicPath: '/keel/',
+  baseUrl: '/keel/',
   configureWebpack: {
     plugins: [
       // Ignore all locale files of moment.js

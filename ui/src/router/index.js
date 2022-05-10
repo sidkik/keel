@@ -6,7 +6,7 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  base: '/keel/',
+  base: 'keel',
   scrollBehavior: () => ({ y: 0 }),
   // routes: constantRouterMap
   routes: constantRouterMap.concat(asyncRouterMap)
