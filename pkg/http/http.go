@@ -125,40 +125,40 @@ func (s *TriggerServer) registerRoutes(mux *mux.Router) {
 	s.registerWebhookRoutes(mux)
 
 	// health endpoint for k8s to be happy
-	mux.HandleFunc("/healthz", s.healthHandler).Methods("GET", "OPTIONS")
+	mux.HandleFunc("/keel/healthz", s.healthHandler).Methods("GET", "OPTIONS")
 	// version handler
-	mux.HandleFunc("/version", s.versionHandler).Methods("GET", "OPTIONS")
+	mux.HandleFunc("/keel/version", s.versionHandler).Methods("GET", "OPTIONS")
 
-	mux.Handle("/metrics", promhttp.Handler())
+	mux.Handle("/keel/metrics", promhttp.Handler())
 
 	if s.authenticator.Enabled() {
 		log.Info("authentication enabled, setting up admin HTTP handlers")
 		// auth
-		mux.HandleFunc("/v1/auth/login", s.loginHandler).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/auth/info", s.requireAdminAuthorization(s.userInfoHandler)).Methods("GET", "OPTIONS")
-		mux.HandleFunc("/v1/auth/user", s.requireAdminAuthorization(s.userInfoHandler)).Methods("GET", "OPTIONS")
-		mux.HandleFunc("/v1/auth/logout", s.requireAdminAuthorization(s.logoutHandler)).Methods("POST", "GET", "OPTIONS")
-		mux.HandleFunc("/v1/auth/refresh", s.requireAdminAuthorization(s.refreshHandler)).Methods("GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/auth/login", s.loginHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/auth/info", s.requireAdminAuthorization(s.userInfoHandler)).Methods("GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/auth/user", s.requireAdminAuthorization(s.userInfoHandler)).Methods("GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/auth/logout", s.requireAdminAuthorization(s.logoutHandler)).Methods("POST", "GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/auth/refresh", s.requireAdminAuthorization(s.refreshHandler)).Methods("GET", "OPTIONS")
 
 		// approvals
-		mux.HandleFunc("/v1/approvals", s.requireAdminAuthorization(s.approvalsHandler)).Methods("GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/approvals", s.requireAdminAuthorization(s.approvalsHandler)).Methods("GET", "OPTIONS")
 		// approving/rejecting
-		mux.HandleFunc("/v1/approvals", s.requireAdminAuthorization(s.approvalApproveHandler)).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/approvals", s.requireAdminAuthorization(s.approvalApproveHandler)).Methods("POST", "OPTIONS")
 		// updating required approvals count
-		mux.HandleFunc("/v1/approvals", s.requireAdminAuthorization(s.approvalSetHandler)).Methods("PUT", "OPTIONS")
+		mux.HandleFunc("/keel/v1/approvals", s.requireAdminAuthorization(s.approvalSetHandler)).Methods("PUT", "OPTIONS")
 
 		// available resources
-		mux.HandleFunc("/v1/resources", s.requireAdminAuthorization(s.resourcesHandler)).Methods("GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/resources", s.requireAdminAuthorization(s.resourcesHandler)).Methods("GET", "OPTIONS")
 
-		mux.HandleFunc("/v1/policies", s.requireAdminAuthorization(s.policyUpdateHandler)).Methods("PUT", "OPTIONS")
+		mux.HandleFunc("/keel/v1/policies", s.requireAdminAuthorization(s.policyUpdateHandler)).Methods("PUT", "OPTIONS")
 
 		// tracked images
-		mux.HandleFunc("/v1/tracked", s.requireAdminAuthorization(s.trackedHandler)).Methods("GET", "OPTIONS")
-		mux.HandleFunc("/v1/tracked", s.requireAdminAuthorization(s.trackSetHandler)).Methods("PUT", "OPTIONS")
+		mux.HandleFunc("/keel/v1/tracked", s.requireAdminAuthorization(s.trackedHandler)).Methods("GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/tracked", s.requireAdminAuthorization(s.trackSetHandler)).Methods("PUT", "OPTIONS")
 
 		// status
-		mux.HandleFunc("/v1/audit", s.requireAdminAuthorization(s.adminAuditLogHandler)).Methods("GET", "OPTIONS")
-		mux.HandleFunc("/v1/stats", s.requireAdminAuthorization(s.statsHandler)).Methods("GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/audit", s.requireAdminAuthorization(s.adminAuditLogHandler)).Methods("GET", "OPTIONS")
+		mux.HandleFunc("/keel/v1/stats", s.requireAdminAuthorization(s.statsHandler)).Methods("GET", "OPTIONS")
 
 		if s.uiDir != "" {
 			// Serve static assets directly.
@@ -179,29 +179,29 @@ func (s *TriggerServer) registerRoutes(mux *mux.Router) {
 func (s *TriggerServer) registerWebhookRoutes(mux *mux.Router) {
 
 	if s.authenticatedWebhooks {
-		mux.HandleFunc("/v1/webhooks/native", s.requireAdminAuthorization(s.nativeHandler)).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/dockerhub", s.requireAdminAuthorization(s.dockerHubHandler)).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/quay", s.requireAdminAuthorization(s.quayHandler)).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/azure", s.requireAdminAuthorization(s.azureHandler)).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/github", s.requireAdminAuthorization(s.githubHandler)).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/harbor", s.requireAdminAuthorization(s.harborHandler)).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/native", s.requireAdminAuthorization(s.nativeHandler)).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/dockerhub", s.requireAdminAuthorization(s.dockerHubHandler)).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/quay", s.requireAdminAuthorization(s.quayHandler)).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/azure", s.requireAdminAuthorization(s.azureHandler)).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/github", s.requireAdminAuthorization(s.githubHandler)).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/harbor", s.requireAdminAuthorization(s.harborHandler)).Methods("POST", "OPTIONS")
 
 		// Docker registry notifications, used by Docker, Gitlab, Harbor
 		// https://docs.docker.com/registry/notifications/
 		//https://docs.gitlab.com/ee/administration/container_registry.html#configure-container-registry-notifications
-		mux.HandleFunc("/v1/webhooks/registry", s.registryNotificationHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/registry", s.registryNotificationHandler).Methods("POST", "OPTIONS")
 	} else {
-		mux.HandleFunc("/v1/webhooks/native", s.nativeHandler).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/dockerhub", s.dockerHubHandler).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/quay", s.quayHandler).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/azure", s.azureHandler).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/github", s.githubHandler).Methods("POST", "OPTIONS")
-		mux.HandleFunc("/v1/webhooks/harbor", s.harborHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/native", s.nativeHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/dockerhub", s.dockerHubHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/quay", s.quayHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/azure", s.azureHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/github", s.githubHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/harbor", s.harborHandler).Methods("POST", "OPTIONS")
 
 		// Docker registry notifications, used by Docker, Gitlab, Harbor
 		// https://docs.docker.com/registry/notifications/
 		//https://docs.gitlab.com/ee/administration/container_registry.html#configure-container-registry-notifications
-		mux.HandleFunc("/v1/webhooks/registry", s.registryNotificationHandler).Methods("POST", "OPTIONS")
+		mux.HandleFunc("/keel/v1/webhooks/registry", s.registryNotificationHandler).Methods("POST", "OPTIONS")
 	}
 }
 

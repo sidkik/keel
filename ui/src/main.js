@@ -71,9 +71,9 @@ Vue.router = router
 
 // dev setup
 if (process.env.NODE_ENV === 'production') {
-  Vue.http.options.root = `${window.location.protocol}//${window.location.host}/v1`
+  Vue.http.options.root = `${window.location.protocol}//${window.location.host}/keel/v1`
 } else {
-  Vue.http.options.root = `http://localhost:9300/v1`
+  Vue.http.options.root = `http://localhost:9300/keel/v1`
 }
 
 Vue.use(require('@websanova/vue-auth'), {
