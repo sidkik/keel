@@ -1,0 +1,38 @@
+name: build keel
+on:
+  push:
+    branches:
+      - "!*"
+    tags:
+      - "*"
+jobs:
+  docker:
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - run: |
+          git fetch --prune --unshallow --tags -f
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: "16"
+        env:
+          CI: true
+      - uses: google-github-actions/setup-gcloud@v0.6.0
+      - name: Get keel App Version
+        id: keel-version
+        run: |
+          echo ::set-output name=version::$(node ./tools/version/get-git-version.js)-$GITHUB_RUN_NUMBER
+      - name: Build and Push keel App
+        uses: RafikFarhad/push-to-gcr-github-action@v4
+        with:
+          gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY_B64 }}
+          context: .
+          dockerfile: build/Dockerfile
+          # build_args: ghost_version=4.43.0
+          registry: us.gcr.io
+          project_id: ep-core-dev
+          image_name: keel
+          image_tag: ${{steps.keel-version.outputs.version}}
+          push_only: false
