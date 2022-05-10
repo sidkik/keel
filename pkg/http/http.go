@@ -162,13 +162,13 @@ func (s *TriggerServer) registerRoutes(mux *mux.Router) {
 
 		if s.uiDir != "" {
 			// Serve static assets directly.
-			mux.PathPrefix("/css/").Handler(http.FileServer(http.Dir(s.uiDir)))
-			mux.PathPrefix("/assets/").Handler(http.FileServer(http.Dir(s.uiDir)))
-			mux.PathPrefix("/js/").Handler(http.FileServer(http.Dir(s.uiDir)))
-			mux.PathPrefix("/img/").Handler(http.FileServer(http.Dir(s.uiDir)))
-			mux.PathPrefix("/loading/").Handler(http.FileServer(http.Dir(s.uiDir)))
+			mux.PathPrefix("/keel/css/").Handler(http.FileServer(http.Dir(s.uiDir)))
+			mux.PathPrefix("/keel/assets/").Handler(http.FileServer(http.Dir(s.uiDir)))
+			mux.PathPrefix("/keel/js/").Handler(http.FileServer(http.Dir(s.uiDir)))
+			mux.PathPrefix("/keel/img/").Handler(http.FileServer(http.Dir(s.uiDir)))
+			mux.PathPrefix("/keel/loading/").Handler(http.FileServer(http.Dir(s.uiDir)))
 
-			mux.PathPrefix("/").HandlerFunc(indexHandler(s.uiDir))
+			mux.PathPrefix("/keel").HandlerFunc(indexHandler(s.uiDir))
 		}
 	} else {
 		log.Info("authentication is not enabled, admin HTTP handlers are not initialized")
