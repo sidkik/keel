@@ -18,5 +18,6 @@ ENV XDG_DATA_HOME /data
 
 COPY --from=0 /go/bin/keel /bin/keel
 COPY --from=1 /app/dist /www/keel
+COPY --from=1 /app/dist/index.html /www/index.html
 ENTRYPOINT ["/bin/keel"]
 EXPOSE 9300

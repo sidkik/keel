@@ -168,7 +168,7 @@ func (s *TriggerServer) registerRoutes(mux *mux.Router) {
 			mux.PathPrefix("/keel/img/").Handler(http.FileServer(http.Dir(s.uiDir)))
 			mux.PathPrefix("/keel/loading/").Handler(http.FileServer(http.Dir(s.uiDir)))
 
-			mux.PathPrefix("/keel/").HandlerFunc(indexHandler(s.uiDir))
+			mux.PathPrefix("/keel").HandlerFunc(indexHandler(s.uiDir))
 		}
 	} else {
 		log.Info("authentication is not enabled, admin HTTP handlers are not initialized")
